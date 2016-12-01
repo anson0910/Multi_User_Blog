@@ -1,0 +1,5 @@
+*.pyc
+main_test.py
+lib/*
+.DS_Store
+**/.DS_Store
