@@ -6,13 +6,11 @@ import string
 from secret import SECRET
 
 
-def hash_str(s):
-    """Hashes given string s and returns result"""
-    return hmac.new(SECRET, s).hexdigest()
-
-
 def make_secure_val(s):
     """returns a string of the format s|hash(s)"""
+    def hash_str(s):
+        """Hashes given string str and returns result"""
+        return hmac.new(SECRET, s).hexdigest()
     return s + '|' + hash_str(s)
 
 
@@ -54,9 +52,3 @@ def valid_pw(name, pw, h):
     if not name or not pw or not h: return False
     salt = h.split(',')[1]
     return make_pw_hash(name, pw, salt) == h
-
-
-if __name__ == '__main__':
-    h = make_pw_hash('spez', 'hunter2')
-    print h
-    print valid_pw('spez', 'hunter2', h)

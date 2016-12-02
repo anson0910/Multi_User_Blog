@@ -24,7 +24,7 @@ class User(db.Model):
 
     @classmethod
     def get_by_name(cls, name):
-        if not valid_username(name): return
+        if not valid_username(name): return None
         q = db.GqlQuery("SELECT * FROM User WHERE name = '%s'" % name)
         return q.get()
 
@@ -37,10 +37,9 @@ class User(db.Model):
 
     @classmethod
     def login(cls, name, pw):
-        if valid_username(name):
-            user = cls.get_by_name(name)
-            if user and valid_pw(name, pw, user.pw_hash):
-                return user
+        user = cls.get_by_name(name)
+        if user and valid_pw(name, pw, user.pw_hash):
+            return user
 
     @classmethod
     def print_to_log(cls):
