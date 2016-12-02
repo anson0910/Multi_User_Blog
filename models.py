@@ -12,6 +12,7 @@ class Post(db.Model):
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
     created = db.StringProperty(required=True)
+    user_id = db.StringProperty(required=True)
 
 
 class User(db.Model):

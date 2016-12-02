@@ -38,6 +38,13 @@ class Handler(webapp2.RequestHandler):
         self.response.headers.add_header('Set-Cookie', 'user_id=%s; Path=/' % cookie_val)
         self.redirect('/welcome')
 
+    def get_user_id(self):
+        """Returns user id if user is logged in, otherwise None"""
+        # get the string of format user_id|hash(user_id) from cookie
+        cookie_val = self.request.cookies.get('user_id')
+        if cookie_val:
+            return check_secure_val(cookie_val)
+
 
 class MainPage(Handler):
     """Handler for front page, which lists most recent 10 posts"""
@@ -56,10 +63,15 @@ class NewPostPage(Handler):
         self.render_newpost()
 
     def post(self):
+        user_id = self.get_user_id()
+        if not user_id:
+            self.redirect('/login')
+            return
+
         subject, content = self.request.get('subject'), self.request.get('content')
         if subject and content:
             curr_time_str = datetime.now(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M')
-            post = Post(subject=subject, content=content, created=curr_time_str)
+            post = Post(subject=subject, content=content, created=curr_time_str, user_id=user_id)
             post.put()
             self.redirect('/' + str(post.key().id()))
         else:
@@ -147,14 +159,11 @@ class LogoutHandler(Handler):
 
 class WelcomeHandler(Handler):
     def get(self):
-        # get the string of format user_id|hash(user_id) from cookie
-        cookie_val = self.request.cookies.get('user_id')
-        if cookie_val:
-            user_id = check_secure_val(cookie_val)
-            if user_id:
-                user = User.get_by_id(int(user_id))
-                self.render('welcome.html', username=user.name)
-                return
+        user_id = self.get_user_id()
+        if user_id:
+            user = User.get_by_id(int(user_id))
+            self.render('welcome.html', username=user.name)
+            return
         self.redirect('/signup')
 
 
