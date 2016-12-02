@@ -3,3 +3,4 @@ main_test.py
 lib/*
 .DS_Store
 **/.DS_Store
+utils/secret.py
