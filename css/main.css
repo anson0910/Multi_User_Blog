@@ -58,7 +58,7 @@ input[type=text] {
 
 textarea {
   width: 500px;
-  height: 400px;
+  height: 300px;
   font-size: 17px;
   font-family: monospace;
 }
@@ -117,4 +117,9 @@ input[type=submit] {
     color: gray;
     font-size: 12px;
 }
+
+.container {
+    max-width: 100%;
+}
+
 

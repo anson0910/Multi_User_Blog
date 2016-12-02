@@ -57,7 +57,7 @@ class MainPage(Handler):
 class NewPostPage(Handler):
     """Handler for creating new post"""
     def render_newpost(self, subject='', content='', error_msg=''):
-        self.render('newpost.html', subject=subject, content=content, error_msg=error_msg)
+        self.render('new_post.html', subject=subject, content=content, error_msg=error_msg)
 
     def get(self):
         self.render_newpost()
@@ -87,6 +87,20 @@ class PostPage(Handler):
             self.error(404)
             return
         self.render('permalink.html', post=post)
+
+
+class EditPostPage(Handler):
+    """Handler for editing post"""
+    def render_editpost(self, subject='', content='', error_msg=''):
+        self.render('edit_post.html', subject=subject, content=content, error_msg=error_msg)
+
+    def get(self, post_id):
+        post = Post.get_by_id(int(post_id))
+        if not post:
+            self.error(404)
+            return
+        # verify user's identity
+        self.render_editpost(post.subject, post.content)
 
 
 class SignupHandler(Handler):
@@ -169,6 +183,7 @@ class WelcomeHandler(Handler):
 
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/newpost', NewPostPage),
+                               ('/([0-9]+)/edit', EditPostPage),
                                ('/([0-9]+)', PostPage),
                                ('/signup', SignupHandler),
                                ('/login', LoginHandler),

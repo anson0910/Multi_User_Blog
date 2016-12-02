@@ -3,15 +3,23 @@
     <head>
         <meta charset="UTF-8">
         <title>Blog</title>
-        <link type="text/css" rel="stylesheet" href="/css/main.css" />
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/main.css">
     </head>
     <body>
         <a href="/" class="main-title">
             Anson's Blog
         </a>
-        <div id="content">
-            {% block content %}
-            {% endblock %}
+
+        <div id="content" class="container">
+            <div class="row">
+                {% block content %}
+                {% endblock %}
+            </div>
         </div>
+
+        <script src="js/jquery-3.1.1.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/script.js"></script>
     </body>
 </html>

@@ -6,6 +6,9 @@
             <a href="{{post.key().id()}}" class="post-title">
               {{post.subject}}
             </a>
+            &nbsp;
+            <a type="button" class="btn-sm btn-success" href="{{post.key().id()}}/edit">Edit</a>
+            <a type="button" class="btn-sm btn-danger" href="{{post.key().id()}}/delete">Delete</a>
             <div class="post-date">
                 {{post.created}}
             </div>

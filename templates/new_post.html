@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>new post</h2>
+  <h2>New post</h2>
 
     <form method="post">
       <label>
@@ -16,6 +16,6 @@
 
       <div class="error">{{error_msg}}</div>
 
-      <input type="submit">
+      <input type="submit" class="btn btn-primary" value="Submit">
     </form>
 {% endblock %}
