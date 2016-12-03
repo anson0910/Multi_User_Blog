@@ -7,9 +7,10 @@
               {{post.subject}}
             </a>
             &nbsp;
-            <a type="button" class="btn-sm btn-success" href="{{post.key().id()}}/edit">Edit</a>
-            <a type="button" class="btn-sm btn-danger" href="{{post.key().id()}}/delete">Delete</a>
+
             <div class="post-date">
+                <a type="button" class="btn-sm btn-success" href="{{post.key().id()}}/edit">Edit</a>
+                <a type="button" class="btn-sm btn-danger" href="{{post.key().id()}}/delete">Delete</a>
                 {{post.created}}
             </div>
         </div>

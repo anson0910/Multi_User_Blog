@@ -98,10 +98,11 @@ input[type=submit] {
     color: #333;
 }
 
+
 .post-date {
     position: absolute;
     right: 0px;
-    bottom: 0px;
+    bottom: 5px;
     color: #999;
 
 }
