@@ -1,6 +1,7 @@
 import os
 import jinja2
 import webapp2
+import time
 from google.appengine.ext import db
 from datetime import datetime
 from pytz import timezone
@@ -60,6 +61,10 @@ class NewPostPage(Handler):
         self.render('new_post.html', subject=subject, content=content, error_msg=error_msg)
 
     def get(self):
+        user_id = self.get_user_id()
+        if not user_id:
+            self.redirect('/login')
+            return
         self.render_newpost()
 
     def post(self):
@@ -91,16 +96,67 @@ class PostPage(Handler):
 
 class EditPostPage(Handler):
     """Handler for editing post"""
-    def render_editpost(self, subject='', content='', error_msg=''):
-        self.render('edit_post.html', subject=subject, content=content, error_msg=error_msg)
+    def render_editpost(self, post, error_msg=''):
+        self.render('edit_post.html', post=post, error_msg=error_msg)
 
     def get(self, post_id):
         post = Post.get_by_id(int(post_id))
         if not post:
             self.error(404)
             return
+
         # verify user's identity
-        self.render_editpost(post.subject, post.content)
+        user_id = self.get_user_id()
+        if not user_id:
+            self.redirect('/login')
+            return
+        if user_id != post.user_id:
+            self.render('permalink.html', post=post, error_msg='You are not the owner of this post!')
+            return
+
+        self.render_editpost(post)
+
+    def post(self, post_id):
+        post = Post.get_by_id(int(post_id))
+        subject, content = self.request.get('subject'), self.request.get('content')
+        if subject and content:
+            curr_time_str = datetime.now(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M')
+            post.subject, post.content, post.created = subject, content, curr_time_str
+            post.put()
+            self.redirect('/' + str(post.key().id()))
+        else:
+            error_msg = 'We need both a subject and some content!'
+            self.render_editpost(post, error_msg)
+
+
+class DeletePostPage(Handler):
+    """Handler for deleting post"""
+    def render_deletepost(self, post_id=''):
+        self.render('delete_post.html', post_id=post_id)
+
+    def get(self, post_id):
+        post = Post.get_by_id(int(post_id))
+        if not post:
+            self.error(404)
+            return
+
+        # verify user's identity
+        user_id = self.get_user_id()
+        if not user_id:
+            self.redirect('/login')
+            return
+        if user_id != post.user_id:
+            self.render('permalink.html', post=post, error_msg='You are not the owner of this post!')
+            return
+
+        self.render_deletepost(post_id)
+
+    def post(self, post_id):
+        post = Post.get_by_id(int(post_id))
+        post.delete()
+        # time.sleep(1)
+        self.redirect('/')
+
 
 
 class SignupHandler(Handler):
@@ -184,6 +240,7 @@ class WelcomeHandler(Handler):
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/newpost', NewPostPage),
                                ('/([0-9]+)/edit', EditPostPage),
+                               ('/([0-9]+)/delete', DeletePostPage),
                                ('/([0-9]+)', PostPage),
                                ('/signup', SignupHandler),
                                ('/login', LoginHandler),

@@ -1,16 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <div class="error">{{error_msg}}</div>
     <div class="post">
         <div class="post-heading">
-            <a href="{{post.key().id()}}" class="post-title">
+            <a href="/{{post.key().id()}}" class="post-title">
               {{post.subject}}
             </a>
             &nbsp;
 
             <div class="post-date">
-                <a type="button" class="btn-sm btn-success" href="{{post.key().id()}}/edit">Edit</a>
-                <a type="button" class="btn-sm btn-danger" href="{{post.key().id()}}/delete">Delete</a>
+                <a type="button" class="btn-sm btn-success" href="/{{post.key().id()}}/edit">Edit</a>
+                <a type="button" class="btn-sm btn-danger" href="/{{post.key().id()}}/delete">Delete</a>
                 {{post.created}}
             </div>
         </div>
