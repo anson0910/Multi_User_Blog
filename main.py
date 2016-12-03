@@ -53,7 +53,8 @@ class Handler(webapp2.RequestHandler):
             self.redirect('/login')
             return False
         if user_id != post.user_id:
-            self.render('permalink.html', post=post, error_msg='You are not the owner of this post!')
+            error_msg = 'You are not the owner of this post!'
+            self.render('permalink.html', post=post, error_msg=error_msg, user_id=self.get_user_id())
             return False
         return True
 
@@ -63,13 +64,14 @@ class MainPage(Handler):
     def get(self):
         posts = db.GqlQuery('SELECT * FROM Post '
                             'ORDER BY created DESC LIMIT 10')
-        self.render('blog.html', posts=posts)
+        self.render('blog.html', posts=posts, user_id=self.get_user_id())
 
 
 class NewPostPage(Handler):
     """Handler for creating new post"""
     def render_newpost(self, subject='', content='', error_msg=''):
-        self.render('new_post.html', subject=subject, content=content, error_msg=error_msg)
+        self.render('new_post.html', subject=subject, content=content,
+                    error_msg=error_msg, user_id=self.get_user_id())
 
     def get(self):
         user_id = self.get_user_id()
@@ -102,13 +104,13 @@ class PostPage(Handler):
         if not post:
             self.error(404)
             return
-        self.render('permalink.html', post=post)
+        self.render('permalink.html', post=post, user_id=self.get_user_id())
 
 
 class EditPostPage(Handler):
     """Handler for editing post"""
     def render_editpost(self, post, error_msg=''):
-        self.render('edit_post.html', post=post, error_msg=error_msg)
+        self.render('edit_post.html', post=post, error_msg=error_msg, user_id=self.get_user_id())
 
     def get(self, post_id):
         post = Post.get_by_id(int(post_id))
@@ -141,7 +143,7 @@ class EditPostPage(Handler):
 class DeletePostPage(Handler):
     """Handler for deleting post"""
     def render_deletepost(self, post_id=''):
-        self.render('delete_post.html', post_id=post_id)
+        self.render('delete_post.html', post_id=post_id, user_id=self.get_user_id())
 
     def get(self, post_id):
         post = Post.get_by_id(int(post_id))
@@ -169,7 +171,7 @@ class DeletePostPage(Handler):
 class SignupHandler(Handler):
     """Handler for user sign up"""
     def get(self):
-        self.render('user_signup.html')
+        self.render('user_signup.html', user_id=self.get_user_id())
 
     def post(self):
         def is_valid():
@@ -203,7 +205,8 @@ class SignupHandler(Handler):
         email = self.request.get('email')
 
         params = {'username': username,
-                  'email': email}
+                  'email': email,
+                  'user-id': self.get_user_id()}
 
         if is_valid():
             user = User.register(name=username, pw=password, email=email)
@@ -214,7 +217,7 @@ class SignupHandler(Handler):
 
 class LoginHandler(Handler):
     def get(self):
-        self.render('login.html')
+        self.render('login.html', user_id=self.get_user_id())
 
     def post(self):
         username = self.request.get('username')
@@ -222,7 +225,8 @@ class LoginHandler(Handler):
 
         user = User.login(name=username, pw=password)
         if not user:
-            self.render('login.html', username=username, err_msg='Invalid login')
+            self.render('login.html', username=username,
+                        err_msg='Invalid login', user_id=self.get_user_id())
         else:
             self.login(user)
 
@@ -239,7 +243,7 @@ class WelcomeHandler(Handler):
         user_id = self.get_user_id()
         if user_id:
             user = User.get_by_id(int(user_id))
-            self.render('welcome.html', username=user.name)
+            self.render('welcome.html', username=user.name, user_id=self.get_user_id())
             return
         self.redirect('/signup')
 

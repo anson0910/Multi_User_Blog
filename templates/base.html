@@ -7,11 +7,24 @@
         <link rel="stylesheet" href="/css/main.css">
     </head>
     <body>
-        <a href="/" class="main-title">
-            Anson's Blog
-        </a>
 
         <div id="content" class="container">
+            <div class="row">
+                <div class="col-xs-6 col-xs-push-3">
+                    <a href="/" class="main-title">
+                        Anson's Blog
+                    </a>
+                </div>
+                <div class="col-xs-3 col-xs-push-4">
+                    {% if not user_id %}
+                        <a href="/login" role="button" class="btn btn-info btn-title">Login</a>
+                        <a href="/signup" role="button" class="btn btn-default btn-title">Signup</a>
+                    {% else %}
+                        <a href="/logout" role="button" class="btn btn-default btn-title">Logout</a>
+                    {% endif %}
+                </div>
+
+            </div>
             <div class="row">
                 {% block content %}
                 {% endblock %}

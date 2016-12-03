@@ -77,6 +77,10 @@ input[type=submit] {
     text-decoration: none;
 }
 
+.btn-title {
+    margin-top: 15px;
+}
+
 .post + .post {
     margin-top: 15px;
 }
