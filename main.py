@@ -46,6 +46,17 @@ class Handler(webapp2.RequestHandler):
         if cookie_val:
             return check_secure_val(cookie_val)
 
+    def is_valid_user(self, post):
+        """Returns true if user is owner of post, called by edit and delete post handlers"""
+        user_id = self.get_user_id()
+        if not user_id:
+            self.redirect('/login')
+            return False
+        if user_id != post.user_id:
+            self.render('permalink.html', post=post, error_msg='You are not the owner of this post!')
+            return False
+        return True
+
 
 class MainPage(Handler):
     """Handler for front page, which lists most recent 10 posts"""
@@ -106,18 +117,16 @@ class EditPostPage(Handler):
             return
 
         # verify user's identity
-        user_id = self.get_user_id()
-        if not user_id:
-            self.redirect('/login')
-            return
-        if user_id != post.user_id:
-            self.render('permalink.html', post=post, error_msg='You are not the owner of this post!')
-            return
-
-        self.render_editpost(post)
+        if self.is_valid_user(post):
+            self.render_editpost(post)
 
     def post(self, post_id):
         post = Post.get_by_id(int(post_id))
+        if not post:
+            self.error(404)
+            return
+        if not self.is_valid_user(post): return
+
         subject, content = self.request.get('subject'), self.request.get('content')
         if subject and content:
             curr_time_str = datetime.now(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M')
@@ -141,22 +150,20 @@ class DeletePostPage(Handler):
             return
 
         # verify user's identity
-        user_id = self.get_user_id()
-        if not user_id:
-            self.redirect('/login')
-            return
-        if user_id != post.user_id:
-            self.render('permalink.html', post=post, error_msg='You are not the owner of this post!')
-            return
-
-        self.render_deletepost(post_id)
+        if self.is_valid_user(post):
+            self.render_deletepost(post_id)
 
     def post(self, post_id):
         post = Post.get_by_id(int(post_id))
-        post.delete()
-        # time.sleep(1)
-        self.redirect('/')
+        if not post:
+            self.error(404)
+            return
 
+        # verify user's identity
+        if self.is_valid_user(post):
+            post.delete()
+            time.sleep(1)
+            self.redirect('/')
 
 
 class SignupHandler(Handler):
