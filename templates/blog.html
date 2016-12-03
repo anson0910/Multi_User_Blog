@@ -13,7 +13,12 @@
                     <span class="likes">{{post.likes}} people like this</span>
 
                     <div class="post-date">
-                        <input type="submit" class="btn btn-primary input-xs" value="Like">
+                        {% if user_id == post.user_id %}
+                            <a type="button" class="btn-sm btn-success" href="/{{post.key().id()}}/edit">Edit</a>
+                            <a type="button" class="btn-sm btn-danger" href="/{{post.key().id()}}/delete">Delete</a>
+                        {% else %}
+                            <input type="submit" class="btn btn-primary input-xs" value="Like">
+                        {% endif %}
                         {{post.created}}
                     </div>
                 </div>
