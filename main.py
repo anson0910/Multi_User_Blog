@@ -168,6 +168,32 @@ class DeletePostPage(Handler):
             self.redirect('/')
 
 
+class LikeHandler(Handler):
+    """Handler for liking a post"""
+    def post(self, post_id):
+        post = Post.get_by_id(int(post_id))
+        if not post:
+            self.error(404)
+            return
+
+        user_id = self.get_user_id()
+        if not user_id:
+            self.redirect('/login')
+            return
+
+        error_msg = ''
+        if user_id == post.user_id:
+            error_msg = 'You can not like your own post!'
+        elif user_id in post.users_liked:
+            error_msg = 'You have already liked this post!'
+        else:
+            post.likes += 1
+            post.users_liked.append(user_id)
+            post.put()
+        self.render('permalink.html', post=post, error_msg=error_msg, user_id=self.get_user_id())
+        # self.render('user_signup.html', user_id=self.get_user_id())
+
+
 class SignupHandler(Handler):
     """Handler for user sign up"""
     def get(self):
@@ -244,15 +270,18 @@ class WelcomeHandler(Handler):
         if user_id:
             user = User.get_by_id(int(user_id))
             self.render('welcome.html', username=user.name, user_id=self.get_user_id())
+            # time.sleep(5)
+            # self.redirect('/')
             return
         self.redirect('/signup')
 
 
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/newpost', NewPostPage),
+                               ('/([0-9]+)', PostPage),
                                ('/([0-9]+)/edit', EditPostPage),
                                ('/([0-9]+)/delete', DeletePostPage),
-                               ('/([0-9]+)', PostPage),
+                               ('/([0-9]+)/like', LikeHandler),
                                ('/signup', SignupHandler),
                                ('/login', LoginHandler),
                                ('/logout', LogoutHandler),

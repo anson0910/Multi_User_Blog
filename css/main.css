@@ -131,6 +131,19 @@ input[type=submit] {
     margin-bottom: 20px;
 }
 
+.likes {
+    margin-left: 10px;
+    color: blue;
+}
+
+.input-xs {
+    height: 23px;
+    padding: 2px 5px;
+    font-size: 10px;
+    line-height: 0; /* If Placeholder of the input is moved up, rem/modify this. */
+    border-radius: 3px;
+}
+
 input {
     max-width: 100%;
 }
