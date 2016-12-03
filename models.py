@@ -13,6 +13,8 @@ class Post(db.Model):
     content = db.TextProperty(required=True)
     created = db.StringProperty(required=True)
     user_id = db.StringProperty(required=True)
+    likes = db.IntegerProperty(default=0)
+    users_liked = db.StringListProperty()
 
 
 class User(db.Model):
