@@ -122,4 +122,12 @@ input[type=submit] {
     max-width: 100%;
 }
 
+.user-page-title {
+    margin-bottom: 20px;
+}
+
+input {
+    max-width: 100%;
+}
+
 
