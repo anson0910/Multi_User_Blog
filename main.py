@@ -47,8 +47,8 @@ class Handler(webapp2.RequestHandler):
         if cookie_val:
             return check_secure_val(cookie_val)
 
-    def is_valid_user(self, post):
-        """Returns true if user is owner of post, called by edit and delete post handlers"""
+    def is_author_of_post(self, post):
+        """Returns true if user is author of post, called by edit and delete post handlers"""
         user_id = self.get_user_id()
         if not user_id:
             self.redirect('/login')
@@ -56,6 +56,19 @@ class Handler(webapp2.RequestHandler):
 
         if user_id != str(post.author.key().id()):
             error_msg = 'You are not the owner of this post!'
+            self.render('permalink.html', post=post, error_msg=error_msg, user_id=user_id)
+            return False
+        return True
+
+    def is_author_of_comment(self, post, comment):
+        """Returns true if user is author of comment, called by edit and delete comment handlers"""
+        user_id = self.get_user_id()
+        if not user_id:
+            self.redirect('/login')
+            return False
+
+        if user_id != str(comment.author.key().id()):
+            error_msg = 'You are not the owner of this comment!'
             self.render('permalink.html', post=post, error_msg=error_msg, user_id=user_id)
             return False
         return True
@@ -123,7 +136,7 @@ class EditPostPage(Handler):
             return
 
         # verify user's identity
-        if self.is_valid_user(post):
+        if self.is_author_of_post(post):
             self.render_editpost(post)
 
     def post(self, post_id):
@@ -131,7 +144,7 @@ class EditPostPage(Handler):
         if not post:
             self.error(404)
             return
-        if not self.is_valid_user(post): return
+        if not self.is_author_of_post(post): return
 
         subject, content = self.request.get('subject'), self.request.get('content')
         if subject and content:
@@ -156,7 +169,7 @@ class DeletePostPage(Handler):
             return
 
         # verify user's identity
-        if self.is_valid_user(post):
+        if self.is_author_of_post(post):
             self.render_deletepost(post_id)
 
     def post(self, post_id):
@@ -166,7 +179,7 @@ class DeletePostPage(Handler):
             return
 
         # verify user's identity
-        if self.is_valid_user(post):
+        if self.is_author_of_post(post):
             # delete comments of post before deleting post
             for comment in post.comments:
                 comment.delete()
@@ -225,6 +238,74 @@ class NewCommentHandler(Handler):
             comment.put()
         time.sleep(1)
         self.render('permalink.html', post=post, error_msg=error_msg, user_id=self.get_user_id())
+
+
+class EditCommentHandler(Handler):
+    """Handler for editing a comment"""
+    def render_editcomment(self, post, comment, error_msg=''):
+        self.render('edit_comment.html', post=post, comment=comment, error_msg=error_msg, user_id=self.get_user_id())
+
+    def get(self, post_id, comment_id):
+        post = Post.get_by_id(int(post_id))
+        comment = Comment.get_by_id(int(comment_id))
+
+        if not post or not comment:
+            self.error(404)
+            return
+
+        # verify user's identity
+        if self.is_author_of_comment(post, comment):
+            self.render_editcomment(post, comment)
+
+    def post(self, post_id, comment_id):
+        post = Post.get_by_id(int(post_id))
+        comment = Comment.get_by_id(int(comment_id))
+
+        if not post or not comment:
+            self.error(404)
+            return
+        if not self.is_author_of_comment(post, comment): return
+
+        content = self.request.get('content')
+        if content:
+            curr_time_str = datetime.now(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M')
+            comment.content, comment.created = content, curr_time_str
+            comment.put()
+            time.sleep(1)
+            self.redirect('/' + str(post.key().id()))
+        else:
+            error_msg = 'You need to type some content!'
+            self.render_editcomment(post, comment, error_msg)
+
+
+class DeleteCommentHandler(Handler):
+    """Handler for deleting comment"""
+    def render_deletecomment(self, post_id=''):
+        self.render('delete_comment.html', post_id=post_id, user_id=self.get_user_id())
+
+    def get(self, post_id, comment_id):
+        post = Post.get_by_id(int(post_id))
+        comment = Comment.get_by_id(int(comment_id))
+        if not post or not comment:
+            self.error(404)
+            return
+
+        # verify user's identity
+        if self.is_author_of_comment(post, comment):
+            self.render_deletecomment(post_id)
+
+    def post(self, post_id, comment_id):
+        post = Post.get_by_id(int(post_id))
+        comment = Comment.get_by_id(int(comment_id))
+        if not post or not comment:
+            self.error(404)
+            return
+
+        # verify user's identity
+        if self.is_author_of_comment(post, comment):
+            comment.delete()
+            time.sleep(1)
+            self.redirect('/' + post_id)
 
 
 class SignupHandler(Handler):
@@ -314,6 +395,8 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/([0-9]+)/delete', DeletePostPage),
                                ('/([0-9]+)/like', LikeHandler),
                                ('/([0-9]+)/newcomment', NewCommentHandler),
+                               ('/([0-9]+)/comment/([0-9]+)/edit', EditCommentHandler),
+                               ('/([0-9]+)/comment/([0-9]+)/delete', DeleteCommentHandler),
                                ('/signup', SignupHandler),
                                ('/login', LoginHandler),
                                ('/logout', LogoutHandler),
