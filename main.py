@@ -86,10 +86,12 @@ class NewPostPage(Handler):
             self.redirect('/login')
             return
 
+        user = User.get_by_id(int(user_id))
         subject, content = self.request.get('subject'), self.request.get('content')
         if subject and content:
             curr_time_str = datetime.now(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M')
-            post = Post(subject=subject, content=content, created=curr_time_str, user_id=user_id)
+            post = Post(subject=subject, content=content,
+                        created=curr_time_str, user_id=user_id, user_name=user.name)
             post.put()
             self.redirect('/' + str(post.key().id()))
         else:
@@ -270,8 +272,6 @@ class WelcomeHandler(Handler):
         if user_id:
             user = User.get_by_id(int(user_id))
             self.render('welcome.html', username=user.name, user_id=self.get_user_id())
-            # time.sleep(5)
-            # self.redirect('/')
             return
         self.redirect('/signup')
 
