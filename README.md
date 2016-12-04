@@ -8,4 +8,4 @@ Multi user blog built using google app engine with webapp2
 * Follow the [App Engine Quickstart](https://cloud.google.com/appengine/docs/python/quickstart) to get a sample app up and running.
 
 ## Running blog locally
-After cloning this directory, you can execute 'dev_appserver.py .' in the directory to run a copy of the app on your own computer, and access it at http://localhost:8080/.
+After cloning this directory, you can execute `dev_appserver.py .` in the directory to run a copy of the app on your own computer, and access it at http://localhost:8080/.
