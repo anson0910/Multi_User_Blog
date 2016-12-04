@@ -54,9 +54,9 @@ class Handler(webapp2.RequestHandler):
             self.redirect('/login')
             return False
 
-        if user_id != post.user_id:
+        if user_id != str(post.author.key().id()):
             error_msg = 'You are not the owner of this post!'
-            self.render('permalink.html', post=post, error_msg=error_msg, user_id=self.get_user_id())
+            self.render('permalink.html', post=post, error_msg=error_msg, user_id=user_id)
             return False
         return True
 
@@ -93,7 +93,7 @@ class NewPostPage(Handler):
         if subject and content:
             curr_time_str = datetime.now(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M')
             post = Post(subject=subject, content=content,
-                        created=curr_time_str, user_id=user_id, user_name=user.name)
+                        created=curr_time_str, author=user)
             post.put()
             self.redirect('/' + str(post.key().id()))
         else:
@@ -186,7 +186,7 @@ class LikeHandler(Handler):
             return
 
         error_msg = ''
-        if user_id == post.user_id:
+        if user_id == str(post.author.key().id()):
             error_msg = 'You can not like your own post!'
         elif user_id in post.users_liked:
             error_msg = 'You have already liked this post!'
@@ -218,8 +218,9 @@ class NewCommentHandler(Handler):
         else:
             curr_time_str = datetime.now(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M')
             comment = Comment(post=post, content=content,
-                              created=curr_time_str, user_id=user_id, user_name=user.name)
+                              created=curr_time_str, author=user)
             comment.put()
+        time.sleep(1)
         self.render('permalink.html', post=post, error_msg=error_msg, user_id=self.get_user_id())
 
 

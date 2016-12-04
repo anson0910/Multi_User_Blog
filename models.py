@@ -5,29 +5,6 @@ from utils.hashing_salt_functions import *
 from utils.validate_info import *
 
 
-class Post(db.Model):
-    """
-    Model for a blog post
-    """
-    subject = db.StringProperty(required=True)
-    content = db.TextProperty(required=True)
-    created = db.StringProperty(required=True)
-    author = db.ReferenceProperty(User)
-    likes = db.IntegerProperty(default=0)
-    users_liked = db.StringListProperty()   # list of user ids that like this post
-    # can access an instance of Post's comments by typing instance_name.comments
-
-
-class Comment(db.Model):
-    """
-    Model for a comment
-    """
-    post = db.ReferenceProperty(Post, collection_name='comments')
-    content = db.TextProperty(required=True)
-    created = db.StringProperty(required=True)
-    author = db.ReferenceProperty(User)
-
-
 class User(db.Model):
     """
     Model for user
@@ -65,3 +42,26 @@ class User(db.Model):
     @classmethod
     def delete_all(cls):
         db.delete(User.all())
+
+
+class Post(db.Model):
+    """
+    Model for a blog post
+    """
+    subject = db.StringProperty(required=True)
+    content = db.TextProperty(required=True)
+    created = db.StringProperty(required=True)
+    author = db.ReferenceProperty(User)
+    likes = db.IntegerProperty(default=0)
+    users_liked = db.StringListProperty()   # list of user ids that like this post
+    # can access an instance of Post's comments by typing instance_name.comments
+
+
+class Comment(db.Model):
+    """
+    Model for a comment
+    """
+    post = db.ReferenceProperty(Post, collection_name='comments')
+    content = db.TextProperty(required=True)
+    created = db.StringProperty(required=True)
+    author = db.ReferenceProperty(User)

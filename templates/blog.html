@@ -10,11 +10,11 @@
                       {{post.subject}}
                     </a>
 
-                    <span>{{post.user_name}}</span>
+                    <span>{{post.author.name}}</span>
                     <span class="likes">{{post.likes}} people like this</span>
 
                     <div class="post-date">
-                        {% if user_id == post.user_id %}
+                        {% if user_id == post.author.key().id()|string() %}
                             <a type="button" class="btn-sm btn-success" href="/{{post.key().id()}}/edit">Edit</a>
                             <a type="button" class="btn-sm btn-danger" href="/{{post.key().id()}}/delete">Delete</a>
                         {% else %}

@@ -10,11 +10,11 @@
                   {{post.subject}}
                 </a>
 
-                <span>{{post.user_name}}</span>
+                <span>{{post.author.name}}</span>
                 <span class="likes">{{post.likes}} people like this</span>
 
                 <div class="post-date">
-                    {% if user_id == post.user_id %}
+                    {% if user_id == post.author.key().id()|string() %}
                         <a type="button" class="btn-sm btn-success" href="/{{post.key().id()}}/edit">Edit</a>
                         <a type="button" class="btn-sm btn-danger" href="/{{post.key().id()}}/delete">Delete</a>
                     {% else %}
@@ -29,27 +29,10 @@
         </form>
 
         <div class="row">
-            <div class="comment col-xs-push-1 col-xs-11">
-                <div class="comment-heading">
-                    <div class="comment-title">Anson</div>
-                </div>
-                <p>
-                   Although moreover mistaken kindness me feelings do be marianne. Son over own nay with tell they cold upon are. Cordial village and settled she ability law herself. Finished why bringing but sir bachelor unpacked any thoughts. Unpleasing unsatiable particular inquietude did nor sir. Get his declared appetite distance his together now families. Friends am himself at on norland it viewing. Suspected elsewhere you belonging continued commanded she.
-                </p>
-                <div class="comment-footer">
-                    <span class="comment-date">2016-12-03 16:47</span>
-                    <a type="button" class="btn-sm btn-success" href="">Edit</a>
-                    <a type="button" class="btn-sm btn-danger" href="">Delete</a>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="row">
             {% for comment in post.comments %}
             <div class="comment col-xs-push-1 col-xs-11">
                 <div class="comment-heading">
-                    <div class="comment-title">{{comment.user_name}}</div>
+                    <div class="comment-title">{{comment.author.name}}</div>
                 </div>
                 <p>{{comment.content}}</p>
                 <div class="comment-footer">
