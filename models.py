@@ -15,7 +15,19 @@ class Post(db.Model):
     user_id = db.StringProperty(required=True)
     user_name = db.StringProperty(required=True)
     likes = db.IntegerProperty(default=0)
-    users_liked = db.StringListProperty()
+    users_liked = db.StringListProperty()   # list of user ids that like this post
+    comments = db.StringListProperty()      # list of comment ids
+
+
+class Comment(db.Model):
+    """
+    Model for a comment
+    """
+    post_id = db.StringProperty(required=True)
+    content = db.TextProperty(required=True)
+    created = db.StringProperty(required=True)
+    user_id = db.StringProperty(required=True)
+    user_name = db.StringProperty(required=True)
 
 
 class User(db.Model):

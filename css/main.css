@@ -139,10 +139,17 @@ input[type=submit] {
 .input-xs {
     height: 23px;
     padding: 2px 5px;
-    font-size: 10px;
-    line-height: 0; /* If Placeholder of the input is moved up, rem/modify this. */
+    line-height: 0; /* If Placeholder of the input is moved up, rem/modify this.*/
     border-radius: 3px;
+    font-size: 14px;
 }
+
+.btn-reply {
+    bottom: 0px;
+    position: absolute;
+}
+
+
 
 input {
     max-width: 100%;
