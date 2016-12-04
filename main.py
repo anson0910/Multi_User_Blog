@@ -7,6 +7,7 @@ from datetime import datetime
 from pytz import timezone
 
 from models import Post
+from models import Comment
 from models import User
 
 from utils.hashing_salt_functions import *
@@ -193,7 +194,34 @@ class LikeHandler(Handler):
             post.users_liked.append(user_id)
             post.put()
         self.render('permalink.html', post=post, error_msg=error_msg, user_id=self.get_user_id())
-        # self.render('user_signup.html', user_id=self.get_user_id())
+
+
+class NewCommentHandler(Handler):
+    """Handler for posting a comment"""
+    def post(self, post_id):
+        post = Post.get_by_id(int(post_id))
+        if not post:
+            self.error(404)
+            return
+
+        user_id = self.get_user_id()
+        if not user_id:
+            self.redirect('/login')
+            return
+        user = User.get_by_id(int(user_id))
+
+        content = self.request.get('content')
+        error_msg = ''
+        if not content:
+            error_msg = 'You need to type some content!'
+        else:
+            curr_time_str = datetime.now(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M')
+            comment = Comment(post_id=post_id, content=content,
+                              created=curr_time_str, user_id=user_id, user_name=user.name)
+            comment.put()
+            post.comments.append(str(comment.key().id()))
+            post.put()
+        self.render('permalink.html', post=post, error_msg=error_msg, user_id=self.get_user_id())
 
 
 class SignupHandler(Handler):
@@ -282,6 +310,7 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/([0-9]+)/edit', EditPostPage),
                                ('/([0-9]+)/delete', DeletePostPage),
                                ('/([0-9]+)/like', LikeHandler),
+                               ('/([0-9]+)/newcomment', NewCommentHandler),
                                ('/signup', SignupHandler),
                                ('/login', LoginHandler),
                                ('/logout', LogoutHandler),
