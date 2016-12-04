@@ -108,12 +108,46 @@ input[type=submit] {
     right: 0px;
     bottom: 5px;
     color: #999;
-
 }
 
 .post-content {
     margin-top: 5px;
 }
+
+
+.comment {
+}
+
+.comment-heading {
+    position: relative;
+    margin-top: 5px;
+}
+
+.comment-title {
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    /*color: #333;*/
+}
+
+.comment-footer {
+    position: relative;
+    border-bottom: 2px dotted #666;
+    padding-bottom: 5px;
+}
+
+.comment-date {
+    left: 0px;
+    bottom: 5px;
+    margin-right: 5px;
+    color: #999;
+}
+
+.comment-form {
+    margin-top: 5px;
+}
+
+
 
 .age {
     position: absolute;
