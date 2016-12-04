@@ -53,6 +53,7 @@ class Handler(webapp2.RequestHandler):
         if not user_id:
             self.redirect('/login')
             return False
+
         if user_id != post.user_id:
             error_msg = 'You are not the owner of this post!'
             self.render('permalink.html', post=post, error_msg=error_msg, user_id=self.get_user_id())
@@ -216,11 +217,9 @@ class NewCommentHandler(Handler):
             error_msg = 'You need to type some content!'
         else:
             curr_time_str = datetime.now(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M')
-            comment = Comment(post_id=post_id, content=content,
+            comment = Comment(post=post, content=content,
                               created=curr_time_str, user_id=user_id, user_name=user.name)
             comment.put()
-            post.comments.append(str(comment.key().id()))
-            post.put()
         self.render('permalink.html', post=post, error_msg=error_msg, user_id=self.get_user_id())
 
 

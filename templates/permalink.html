@@ -45,6 +45,22 @@
             </div>
         </div>
 
+        <div class="row">
+            {% for comment in post.comments %}
+            <div class="comment col-xs-push-1 col-xs-11">
+                <div class="comment-heading">
+                    <div class="comment-title">{{comment.user_name}}</div>
+                </div>
+                <p>{{comment.content}}</p>
+                <div class="comment-footer">
+                    <span class="comment-date">{{comment.created}}</span>
+                    <a type="button" class="btn-sm btn-success" href="">Edit</a>
+                    <a type="button" class="btn-sm btn-danger" href="">Delete</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
         <form class="form-inline row comment-form" action="/{{post.key().id()}}/newcomment" method="post">
             <div class="col-xs-push-1 col-xs-10">
                 <textarea class="form-control" placeholder="Write a comment..." name="content"></textarea>
@@ -53,5 +69,6 @@
         </form>
 
     </div>
+
 
 {% endblock %}

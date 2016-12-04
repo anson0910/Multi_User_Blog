@@ -12,22 +12,20 @@ class Post(db.Model):
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
     created = db.StringProperty(required=True)
-    user_id = db.StringProperty(required=True)
-    user_name = db.StringProperty(required=True)
+    author = db.ReferenceProperty(User)
     likes = db.IntegerProperty(default=0)
     users_liked = db.StringListProperty()   # list of user ids that like this post
-    comments = db.StringListProperty()      # list of comment ids
+    # can access an instance of Post's comments by typing instance_name.comments
 
 
 class Comment(db.Model):
     """
     Model for a comment
     """
-    post_id = db.StringProperty(required=True)
+    post = db.ReferenceProperty(Post, collection_name='comments')
     content = db.TextProperty(required=True)
     created = db.StringProperty(required=True)
-    user_id = db.StringProperty(required=True)
-    user_name = db.StringProperty(required=True)
+    author = db.ReferenceProperty(User)
 
 
 class User(db.Model):
