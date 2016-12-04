@@ -167,6 +167,9 @@ class DeletePostPage(Handler):
 
         # verify user's identity
         if self.is_valid_user(post):
+            # delete comments of post before deleting post
+            for comment in post.comments:
+                comment.delete()
             post.delete()
             time.sleep(1)
             self.redirect('/')
