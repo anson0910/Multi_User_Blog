@@ -32,16 +32,12 @@ class User(db.Model):
         if user and valid_pw(name, pw, user.pw_hash):
             return user
 
-    @classmethod
-    def print_to_log(cls):
-        logging.info('printing database')
-        q = db.GqlQuery('SELECT * FROM User')
-        for u in q:
-            logging.info(u.name + ' ' + u.pw_hash)
-
-    @classmethod
-    def delete_all(cls):
-        db.delete(User.all())
+    # @classmethod
+    # def print_to_log(cls):
+    #     logging.info('printing database')
+    #     q = db.GqlQuery('SELECT * FROM User')
+    #     for u in q:
+    #         logging.info(u.name + ' ' + u.pw_hash)
 
 
 class Post(db.Model):
